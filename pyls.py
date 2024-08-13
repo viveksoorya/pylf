@@ -51,15 +51,15 @@ parser = argparse.ArgumentParser(prog='argparseTinkerTool', description='testing
 parser.add_argument('-F', '--filetype', help = 'displays file type', action = 'store_true')
 parser.add_argument('-a', '--all', help = 'displays all files including hidden ones', action = 'store_true')
 parser.add_argument('-l', '--long', help = 'displays metadata of files', action = 'store_true')
-#parser.add_argument('filename')
+parser.add_argument('foldername')
 
 args = parser.parse_args()
 
-def main(args):
-    results = getDescriptionsOfFilesInDir(args)
-    displayResults(results, args)
+#def main(args):
+ #   results = getDescriptionsOfFilesInDir(args)
+  #  displayResults(results, args)
 
-def getDescriptionsOfFilesInDir(flags):
+def getDescriptionsOfFilesInDir(directory):
     """
     define input:
 
@@ -78,11 +78,40 @@ def getDescriptionsOfFilesInDir(flags):
     "filesize" = Number of bytes in the file.
     """
     
-    """
-    using os library extract the file names
+    
+    # [\check]: using os library extract the file names
 
-    """    
-    return []
+        
+
+    assert (isinstance(directory,str)) # asserts that the input is a string
+    #directory = "pylf"
+    #print(directory)
+    #print(1)
+    listOfEntriesInTheDirectory = []
+    for inode in os.listdir(directory):
+       filepath = os.path.join(directory, inode)
+
+       if os.path.isfile(filepath):
+          metadata = os.stat(filepath)
+
+          listOfEntriesInTheDirectory.append({
+              "filename": inode,
+              "size": metadata.st_size,
+              "last modified": metadata.st_mtime
+          }) 
+          #print(1) testing to see if this branch is entered 
+       else:
+           listOfEntriesInTheDirectory.append({
+               "foldername": inode,
+               "size": 0,
+               "last modified": metadata.st_mtime
+        })
+           #print(2) testing to see if this branch is entered 
+    #print(listOfEntriesInTheDirectory) asserting non-emptiness of list
+    
+    return listOfEntriesInTheDirectory
+
+    
 
 def displayResults(results, flags):
     """
@@ -97,4 +126,5 @@ def displayResults(results, flags):
     """
     print()
 
-main(args)
+getDescriptionsOfFilesInDir(args.foldername)
+#main(args)
